@@ -8,10 +8,14 @@ import (
 	"fmt"
 	"log"
 
+	"github.com/alireza-hmd/c2/client"
+	cRepo "github.com/alireza-hmd/c2/client/mysql"
 	"github.com/alireza-hmd/c2/cmd"
 	"github.com/alireza-hmd/c2/listener"
-	"github.com/alireza-hmd/c2/listener/mysql"
+	lService "github.com/alireza-hmd/c2/listener"
+	lRepo "github.com/alireza-hmd/c2/listener/mysql"
 	"github.com/alireza-hmd/c2/pkg/configs"
+	"github.com/alireza-hmd/c2/tasks"
 	ms "gorm.io/driver/mysql"
 	"gorm.io/gorm"
 )
@@ -25,14 +29,16 @@ func main() {
 	if err != nil {
 		log.Panic(err)
 	}
-	listenerRepo := mysql.NewRepository(db)
-	listenerService := listener.NewService(listenerRepo)
+	clientRepo := cRepo.NewRepository(db)
+	listenerRepo := lRepo.NewRepository(db)
+	listenerService := lService.NewService(listenerRepo, clientRepo)
 
 	stopChannel := make(map[int](chan listener.Cancel))
 	s := &cmd.Services{
 		Listener: listenerService,
 		Stop:     stopChannel,
 	}
+	s.Listener.RunActiveListeners(stopChannel)
 	cmd.Init(s)
 }
 
@@ -46,7 +52,7 @@ func InitDB() (*gorm.DB, error) {
 		return nil, errors.New("error initializing database connection")
 	}
 
-	if err := db.Migrator().AutoMigrate(&listener.Listener{}); err != nil {
+	if err := db.Migrator().AutoMigrate(&listener.Listener{}, &client.Client{}, &tasks.Task{}); err != nil {
 		log.Println(err)
 		return nil, errors.New("error migrating models")
 	}

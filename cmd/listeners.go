@@ -44,13 +44,12 @@ func ListenerCommand(c *Command, args []string, s *Services) {
 			return
 		}
 		p, _ := strconv.Atoi(args[2])
-		l := listener.NewListener(args[0], args[1], uint(p))
+		l := listener.NewListener(args[0], args[1], p)
 		_, err := s.Listener.Create(l, s.Stop)
 		if err != nil {
 			ErrorResponse(ListenerMenu.Name, err.Error())
 			return
 		}
-		fmt.Printf("%s listener activated on port %d\n", l.Name, l.Port)
 	case "stop":
 		if len(args) != len(c.Args) {
 			ErrorResponse(ListenerMenu.Name, "invalid arugment. visit the help menu.")

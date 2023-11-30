@@ -33,8 +33,8 @@ func (r *ListenerRepository) Get(name string) (*listener.Listener, error) {
 	return &l, nil
 }
 
-func (r *ListenerRepository) List() ([]listener.Listener, error) {
-	var ll []listener.Listener
+func (r *ListenerRepository) List() ([]*listener.Listener, error) {
+	var ll []*listener.Listener
 	res := r.db.Model(&listener.Listener{}).Find(&ll)
 	if err := res.Error; err != nil {
 		log.Println(err)
@@ -46,8 +46,8 @@ func (r *ListenerRepository) List() ([]listener.Listener, error) {
 	return ll, nil
 }
 
-func (r *ListenerRepository) ListActive() ([]listener.Listener, error) {
-	var ll []listener.Listener
+func (r *ListenerRepository) ListActive() ([]*listener.Listener, error) {
+	var ll []*listener.Listener
 	res := r.db.Model(&listener.Listener{}).Where("active = ?", listener.ActiveStatus).Find(&ll)
 	if err := res.Error; err != nil {
 		log.Println(err)
@@ -73,9 +73,6 @@ func (r *ListenerRepository) Update(name string, l *listener.ListenerUptade) err
 	if err := res.Error; err != nil {
 		log.Println(err)
 		return errors.New("error updating listener\n")
-	}
-	if res.RowsAffected == 0 {
-		return response.ErrNotFound
 	}
 	return nil
 }
