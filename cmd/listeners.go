@@ -38,7 +38,7 @@ func ListenersCommand(c *Command, args []string, s *Services) {
 		for _, l := range ll {
 			fmt.Printf("%s listener is active on port %d\n", l.Name, l.Port)
 		}
-	case "start":
+	case "add":
 		if len(args) != len(c.Args) {
 			ErrorResponse(ListenerMenu.Name, "invalid arugment. visit the help menu.")
 			return
@@ -50,6 +50,22 @@ func ListenersCommand(c *Command, args []string, s *Services) {
 			ErrorResponse(ListenerMenu.Name, err.Error())
 			return
 		}
+	case "start":
+		if len(args) != len(c.Args) {
+			ErrorResponse(ListenerMenu.Name, "invalid arugment. visit the help menu.")
+			return
+		}
+		l, err := s.Listener.Get(args[0])
+		if err != nil {
+			ErrorResponse(ListenerMenu.Name, err.Error())
+			return
+		}
+		s.Stop[l.ID] = make(chan listeners.Cancel, 1)
+		if err := s.Listener.Activation(l, s.Stop[l.ID], listeners.ActiveStatus); err != nil {
+			ErrorResponse(ListenerMenu.Name, err.Error())
+			return
+		}
+		fmt.Printf("started successfuly on port %d\n", l.Port)
 	case "stop":
 		if len(args) != len(c.Args) {
 			ErrorResponse(ListenerMenu.Name, "invalid arugment. visit the help menu.")
@@ -73,6 +89,10 @@ func ListenersCommand(c *Command, args []string, s *Services) {
 		}
 		l, err := s.Listener.Get(args[0])
 		if err != nil {
+			ErrorResponse(ListenerMenu.Name, err.Error())
+			return
+		}
+		if err := s.Clients.DeleteListenerClient(l.Name); err != nil {
 			ErrorResponse(ListenerMenu.Name, err.Error())
 			return
 		}

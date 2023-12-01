@@ -14,8 +14,14 @@ func (s *Service) Get(id int) (*Task, error) {
 	return s.repo.Get(id)
 }
 
-func (s *Service) List(client string) ([]*Task, error) {
-	return s.repo.ListClientTasks(client)
+func (s *Service) List() ([]*Task, error) {
+	return s.repo.List()
+}
+func (s *Service) ListToDoTasks(client string) ([]*Task, error) {
+	return s.repo.ListToDoTasks(client)
+}
+func (s *Service) ListDoneTasks(client string) ([]*Task, error) {
+	return s.repo.ListDoneTasks(client)
 }
 
 func (s *Service) Create(client, listener, command, taskType string) (int, error) {

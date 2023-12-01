@@ -32,3 +32,7 @@ func (s *Service) Update(token string, c *ClientUpdate) error {
 func (s *Service) Delete(token string) error {
 	return s.repo.Delete(token)
 }
+
+func (s *Service) DeleteListenerClient(name string) error {
+	return s.repo.DeleteListenerClient(name)
+}

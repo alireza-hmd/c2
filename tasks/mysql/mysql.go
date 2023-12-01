@@ -47,12 +47,24 @@ func (r *TasksRepository) List() ([]*tasks.Task, error) {
 	return tt, nil
 }
 
-func (r *TasksRepository) ListClientTasks(client string) ([]*tasks.Task, error) {
+func (r *TasksRepository) ListToDoTasks(client string) ([]*tasks.Task, error) {
 	var tt []*tasks.Task
-	res := r.db.Model(&tasks.Task{}).Where("client = ?", client).Find(&tt)
+	res := r.db.Model(&tasks.Task{}).Where("client = ? and status = ?", client, tasks.ToDo).Find(&tt)
 	if err := res.Error; err != nil {
 		log.Println(err)
-		return nil, errors.New("error getting tasks from db")
+		return nil, errors.New("error getting to do tasks from db")
+	}
+	if res.RowsAffected == 0 {
+		return nil, response.ErrNotFound
+	}
+	return tt, nil
+}
+func (r *TasksRepository) ListDoneTasks(client string) ([]*tasks.Task, error) {
+	var tt []*tasks.Task
+	res := r.db.Model(&tasks.Task{}).Where("client = ? and (status = ? or status = ?)", client, tasks.Done, tasks.Failed).Find(&tt)
+	if err := res.Error; err != nil {
+		log.Println(err)
+		return nil, errors.New("error getting done tasks from db")
 	}
 	if res.RowsAffected == 0 {
 		return nil, response.ErrNotFound

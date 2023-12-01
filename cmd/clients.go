@@ -1,6 +1,10 @@
 package cmd
 
-import "fmt"
+import (
+	"fmt"
+
+	"github.com/alireza-hmd/c2/listeners"
+)
 
 func Clients(s *Services) {
 	ClientMenu.Clear()
@@ -37,6 +41,18 @@ func ClientsCommand(c *Command, args []string, s *Services) {
 	case "remove":
 		if len(args) != len(c.Args) {
 			ErrorResponse(ClientMenu.Name, "invalid arugment. visit the help menu.")
+			return
+		}
+		cli, err := s.Clients.Get(args[0])
+		if err != nil {
+			ErrorResponse(ClientMenu.Name, err.Error())
+			return
+		}
+		listener := &listeners.ListenerUptade{
+			Connected: listeners.Disconnected,
+		}
+		if err := s.Listener.Update(cli.Listener, listener); err != nil {
+			ErrorResponse(ClientMenu.Name, err.Error())
 			return
 		}
 		if err := s.Clients.Delete(args[0]); err != nil {

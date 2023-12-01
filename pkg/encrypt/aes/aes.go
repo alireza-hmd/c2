@@ -71,3 +71,9 @@ func Decrypt(data []byte, key []byte) ([]byte, error) {
 	}
 	return text, nil
 }
+
+func StrToByte(str string) []byte {
+	byteString := make([]byte, len(str))
+	copy(byteString, str)
+	return byteString
+}

@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"strconv"
 	"strings"
+
+	"github.com/alireza-hmd/c2/tasks"
 )
 
 var ValidCommands = []string{"timeout", "pwd"}
@@ -32,7 +34,7 @@ func TasksCommand(c *Command, args []string, s *Services) {
 			ErrorResponse(TasksMenu.Name, "invalid arugment. visit the help menu.")
 			return
 		}
-		tt, err := s.Tasks.List(args[0])
+		tt, err := s.Tasks.ListToDoTasks(args[0])
 		if err != nil {
 			ErrorResponse(TasksMenu.Name, err.Error())
 			return
@@ -64,7 +66,27 @@ func TasksCommand(c *Command, args []string, s *Services) {
 			return
 		}
 		fmt.Printf("tasks #%d created\n", id)
-
+	case "results":
+		if len(args) != len(c.Args) {
+			ErrorResponse(TasksMenu.Name, "invalid arugment. visit the help menu.")
+			return
+		}
+		tt, err := s.Tasks.ListDoneTasks(args[0])
+		if err != nil {
+			ErrorResponse(TasksMenu.Name, err.Error())
+			return
+		}
+		if len(tt) == 0 {
+			ErrorResponse(TasksMenu.Name, "No tasks found for client")
+			return
+		}
+		for _, t := range tt {
+			if t.Status == tasks.Failed {
+				fmt.Printf("task #%d \"%s\" failed to run on client %s with result: %s\n", t.ID, t.Command, t.Client, t.Result)
+				continue
+			}
+			fmt.Printf("task #%d \"%s\" done on client %s with result: %s\n", t.ID, t.Command, t.Client, t.Result)
+		}
 	case "remove":
 		if len(args) != len(c.Args) {
 			ErrorResponse(TasksMenu.Name, "invalid arugment. visit the help menu.")

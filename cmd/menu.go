@@ -97,7 +97,8 @@ func Init(s *Services) {
 	C2Menu.AddDefaultCommands()
 
 	ListenerMenu.AddCommand("list", "List active listeners.", []string{})
-	ListenerMenu.AddCommand("start", "Start a listener.", []string{"<name>", "<connection>", "<port>"})
+	ListenerMenu.AddCommand("add", "Create a listener.", []string{"<name>", "<connection>", "<port>"})
+	ListenerMenu.AddCommand("start", "Start a listener.", []string{"<name>"})
 	ListenerMenu.AddCommand("stop", "Stop an active listener.", []string{"<name>"})
 	ListenerMenu.AddCommand("remove", "Remove a listener.", []string{"<name>"})
 	ListenerMenu.AddDefaultCommands()
@@ -108,6 +109,7 @@ func Init(s *Services) {
 
 	TasksMenu.AddCommand("list", "List client tasks.", []string{"<client_token>"})
 	TasksMenu.AddCommand("add", "Generate a task.", []string{"<client_token>", "<command>"})
+	TasksMenu.AddCommand("results", "list client tasks result.", []string{"<client_token>"})
 	TasksMenu.AddCommand("remove", "Remove a task.", []string{"<id>"})
 	TasksMenu.AddDefaultCommands()
 

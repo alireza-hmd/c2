@@ -92,3 +92,15 @@ func (r *ClientRepository) Delete(token string) error {
 	}
 	return nil
 }
+
+func (r *ClientRepository) DeleteListenerClient(name string) error {
+	res := r.db.Where("listener = ?", name).Delete(&clients.Client{})
+	if err := res.Error; err != nil {
+		log.Println(err)
+		return errors.New("error deleting client\n")
+	}
+	if res.RowsAffected == 0 {
+		return response.ErrNotFound
+	}
+	return nil
+}

@@ -74,7 +74,8 @@ func (s *Service) Activation(l *Listener, stop chan Cancel, status int) error {
 
 func (s *Service) Run(l *Listener, stop chan Cancel) {
 	cService := clients.NewService(s.cRepo)
-	InitHandler(s, cService, l.Name, l.Port)
+	tService := tasks.NewService(s.tRepo)
+	InitHandler(s, cService, tService, l.Name, l.Port, stop)
 }
 
 func (s *Service) RunActiveListeners(stop map[int](chan Cancel)) error {

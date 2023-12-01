@@ -4,7 +4,7 @@ import "time"
 
 const (
 	//task status
-	Created   = 1
+	ToDo      = 1
 	Delivered = 2
 	Done      = 3
 	Failed    = 4
@@ -35,20 +35,22 @@ func NewTask(client, listener, command string, taskType string) *Task {
 		Client:   client,
 		Listener: listener,
 		Command:  command,
-		Status:   Created,
+		Status:   ToDo,
 		TaskType: taskType,
 	}
 }
 
 type TaskUpdate struct {
 	Status    int       `json:"status"`
+	Result    string    `json:"result"`
 	UpdatedAt time.Time `json:"updated_at"`
 }
 
 type Reader interface {
 	Get(id int) (*Task, error)
 	List() ([]*Task, error)
-	ListClientTasks(client string) ([]*Task, error)
+	ListToDoTasks(client string) ([]*Task, error)
+	ListDoneTasks(client string) ([]*Task, error)
 }
 
 type Writer interface {
@@ -64,7 +66,9 @@ type Repository interface {
 
 type UseCase interface {
 	Get(id int) (*Task, error)
-	List(client string) ([]*Task, error)
+	List() ([]*Task, error)
+	ListToDoTasks(client string) ([]*Task, error)
+	ListDoneTasks(client string) ([]*Task, error)
 	Create(client, listener, command, taskType string) (int, error)
 	Update(id int, t *TaskUpdate) error
 	Delete(id int) error
