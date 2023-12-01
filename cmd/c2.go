@@ -20,11 +20,11 @@ func C2(s *Services) {
 func C2Command(c *Command, args []string, s *Services) {
 	switch c.Name {
 	case "listeners":
-		Listener(s)
+		Listeners(s)
 	case "clients":
-		Client(s)
-	case "payloads":
-		Payload(s)
+		Clients(s)
+	case "tasks":
+		Tasks(s)
 	case "home":
 		C2(s)
 	case "help":

@@ -5,7 +5,7 @@ import (
 	"log"
 	"time"
 
-	"github.com/alireza-hmd/c2/client"
+	"github.com/alireza-hmd/c2/clients"
 	"github.com/alireza-hmd/c2/pkg/response"
 	"gorm.io/gorm"
 )
@@ -20,9 +20,9 @@ func NewRepository(db *gorm.DB) *ClientRepository {
 	}
 }
 
-func (r *ClientRepository) Get(token string) (*client.Client, error) {
-	var c client.Client
-	res := r.db.Model(&client.Client{}).Where("token = ?", token).Limit(1).Find(&c)
+func (r *ClientRepository) Get(token string) (*clients.Client, error) {
+	var c clients.Client
+	res := r.db.Model(&clients.Client{}).Where("token = ?", token).Limit(1).Find(&c)
 	if err := res.Error; err != nil {
 		log.Println(err)
 		return nil, errors.New("error getting client from db\n")
@@ -33,9 +33,9 @@ func (r *ClientRepository) Get(token string) (*client.Client, error) {
 	return &c, nil
 }
 
-func (r *ClientRepository) List() ([]client.Client, error) {
-	var cc []client.Client
-	res := r.db.Model(&client.Client{}).Find(&cc)
+func (r *ClientRepository) List() ([]clients.Client, error) {
+	var cc []clients.Client
+	res := r.db.Model(&clients.Client{}).Find(&cc)
 	if err := res.Error; err != nil {
 		log.Println(err)
 		return nil, errors.New("error getting clients list from db\n")
@@ -46,9 +46,9 @@ func (r *ClientRepository) List() ([]client.Client, error) {
 	return cc, nil
 }
 
-func (r *ClientRepository) ListConnected() ([]client.Client, error) {
-	var cc []client.Client
-	res := r.db.Model(&client.Client{}).Where("connected = ?", client.Connected).Find(&cc)
+func (r *ClientRepository) ListConnected() ([]clients.Client, error) {
+	var cc []clients.Client
+	res := r.db.Model(&clients.Client{}).Where("connected = ?", clients.Connected).Find(&cc)
 	if err := res.Error; err != nil {
 		log.Println(err)
 		return nil, errors.New("error getting connected clients list from db\n")
@@ -59,7 +59,7 @@ func (r *ClientRepository) ListConnected() ([]client.Client, error) {
 	return cc, nil
 }
 
-func (r *ClientRepository) Create(c *client.Client) (int, error) {
+func (r *ClientRepository) Create(c *clients.Client) (int, error) {
 	err := r.db.Create(c).Error
 	if err != nil {
 		log.Println(err)
@@ -68,9 +68,9 @@ func (r *ClientRepository) Create(c *client.Client) (int, error) {
 	return c.ID, nil
 }
 
-func (r *ClientRepository) Update(token string, c *client.ClientUpdate) error {
+func (r *ClientRepository) Update(token string, c *clients.ClientUpdate) error {
 	c.UpdatedAt = time.Now()
-	res := r.db.Model(&client.Client{}).Where("token = ?", token).Updates(c)
+	res := r.db.Model(&clients.Client{}).Where("token = ?", token).Updates(c)
 	if err := res.Error; err != nil {
 		log.Println(err)
 		return errors.New("error updating client\n")
@@ -82,7 +82,7 @@ func (r *ClientRepository) Update(token string, c *client.ClientUpdate) error {
 }
 
 func (r *ClientRepository) Delete(token string) error {
-	res := r.db.Where("token = ?", token).Delete(&client.Client{})
+	res := r.db.Where("token = ?", token).Delete(&clients.Client{})
 	if err := res.Error; err != nil {
 		log.Println(err)
 		return errors.New("error deleting client\n")

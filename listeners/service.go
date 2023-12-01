@@ -1,22 +1,25 @@
-package listener
+package listeners
 
 import (
 	"errors"
 	"fmt"
 	"log"
 
-	"github.com/alireza-hmd/c2/client"
+	"github.com/alireza-hmd/c2/clients"
+	"github.com/alireza-hmd/c2/tasks"
 )
 
 type Service struct {
 	lRepo Repository
-	cRepo client.Repository
+	cRepo clients.Repository
+	tRepo tasks.Repository
 }
 
-func NewService(lr Repository, cr client.Repository) UseCase {
+func NewService(lr Repository, cr clients.Repository, tr tasks.Repository) UseCase {
 	return &Service{
 		lRepo: lr,
 		cRepo: cr,
+		tRepo: tr,
 	}
 }
 
@@ -70,7 +73,7 @@ func (s *Service) Activation(l *Listener, stop chan Cancel, status int) error {
 }
 
 func (s *Service) Run(l *Listener, stop chan Cancel) {
-	cService := client.NewService(s.cRepo)
+	cService := clients.NewService(s.cRepo)
 	InitHandler(s, cService, l.Name, l.Port)
 }
 

@@ -1,4 +1,4 @@
-package client
+package clients
 
 type Service struct {
 	repo Repository
@@ -15,7 +15,7 @@ func (s *Service) Get(token string) (*Client, error) {
 }
 
 func (s *Service) List() ([]Client, error) {
-	return s.repo.List()
+	return s.repo.ListConnected()
 }
 
 func (s *Service) Create(c *Client) (int, error) {

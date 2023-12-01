@@ -1,9 +1,9 @@
-package client
+package clients
 
 import (
 	"time"
 
-	"github.com/alireza-hmd/c2/pkg/aes"
+	"github.com/alireza-hmd/c2/pkg/encrypt/aes"
 )
 
 const (

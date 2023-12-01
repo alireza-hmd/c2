@@ -26,6 +26,10 @@ type Task struct {
 	CreatedAt time.Time `json:"created_at"`
 }
 
+func (t *Task) Validate() error {
+	return nil
+}
+
 func NewTask(client, listener, command string, taskType string) *Task {
 	return &Task{
 		Client:   client,
@@ -44,6 +48,7 @@ type TaskUpdate struct {
 type Reader interface {
 	Get(id int) (*Task, error)
 	List() ([]*Task, error)
+	ListClientTasks(client string) ([]*Task, error)
 }
 
 type Writer interface {
@@ -59,8 +64,8 @@ type Repository interface {
 
 type UseCase interface {
 	Get(id int) (*Task, error)
-	List() ([]*Task, error)
-	Create(t *Task) (int, error)
+	List(client string) ([]*Task, error)
+	Create(client, listener, command, taskType string) (int, error)
 	Update(id int, t *TaskUpdate) error
 	Delete(id int) error
 }

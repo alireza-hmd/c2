@@ -6,12 +6,16 @@ import (
 	"os"
 	"strings"
 
-	"github.com/alireza-hmd/c2/listener"
+	"github.com/alireza-hmd/c2/clients"
+	"github.com/alireza-hmd/c2/listeners"
+	"github.com/alireza-hmd/c2/tasks"
 )
 
 type Services struct {
-	Listener listener.UseCase
-	Stop     map[int](chan listener.Cancel)
+	Tasks    tasks.UseCase
+	Clients  clients.UseCase
+	Listener listeners.UseCase
+	Stop     map[int](chan listeners.Cancel)
 }
 
 type Command struct {
@@ -35,7 +39,7 @@ func NewMenu(name string) *Menu {
 var C2Menu *Menu
 var ListenerMenu *Menu
 var ClientMenu *Menu
-var PayloadMenu *Menu
+var TasksMenu *Menu
 
 func (m *Menu) Input() (string, []string) {
 	reader := bufio.NewReader(os.Stdin)
@@ -85,11 +89,11 @@ func Init(s *Services) {
 	C2Menu = NewMenu("c2")
 	ListenerMenu = NewMenu("listeners")
 	ClientMenu = NewMenu("clients")
-	PayloadMenu = NewMenu("payloads")
+	TasksMenu = NewMenu("tasks")
 
 	C2Menu.AddCommand("listeners", "Manage listeners.", []string{})
 	C2Menu.AddCommand("clients", "Manage active clients.", []string{})
-	C2Menu.AddCommand("payloads", "Generate payloads.", []string{})
+	C2Menu.AddCommand("tasks", "Manage tasks.", []string{})
 	C2Menu.AddDefaultCommands()
 
 	ListenerMenu.AddCommand("list", "List active listeners.", []string{})
@@ -99,12 +103,13 @@ func Init(s *Services) {
 	ListenerMenu.AddDefaultCommands()
 
 	ClientMenu.AddCommand("list", "List active clients.", []string{})
-	ClientMenu.AddCommand("remove", "Remove an client.", []string{"<name>"})
+	ClientMenu.AddCommand("remove", "Remove a client.", []string{"<name>"})
 	ClientMenu.AddDefaultCommands()
 
-	PayloadMenu.AddCommand("list", "List available payload types.", []string{})
-	PayloadMenu.AddCommand("generate", "Generate a payload.", []string{"<type>", "<listener>"})
-	PayloadMenu.AddDefaultCommands()
+	TasksMenu.AddCommand("list", "List client tasks.", []string{"<client_token>"})
+	TasksMenu.AddCommand("add", "Generate a task.", []string{"<client_token>", "<command>"})
+	TasksMenu.AddCommand("remove", "Remove a task.", []string{"<id>"})
+	TasksMenu.AddDefaultCommands()
 
 	C2(s)
 }

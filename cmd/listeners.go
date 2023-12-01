@@ -4,10 +4,10 @@ import (
 	"fmt"
 	"strconv"
 
-	"github.com/alireza-hmd/c2/listener"
+	"github.com/alireza-hmd/c2/listeners"
 )
 
-func Listener(s *Services) {
+func Listeners(s *Services) {
 	ListenerMenu.Clear()
 	for {
 		c, args := ListenerMenu.Input()
@@ -19,11 +19,11 @@ func Listener(s *Services) {
 			ErrorResponse(ListenerMenu.Name, "invalid command\n")
 			continue
 		}
-		ListenerCommand(command, args, s)
+		ListenersCommand(command, args, s)
 	}
 }
 
-func ListenerCommand(c *Command, args []string, s *Services) {
+func ListenersCommand(c *Command, args []string, s *Services) {
 	switch c.Name {
 	case "list":
 		ll, err := s.Listener.List()
@@ -44,7 +44,7 @@ func ListenerCommand(c *Command, args []string, s *Services) {
 			return
 		}
 		p, _ := strconv.Atoi(args[2])
-		l := listener.NewListener(args[0], args[1], p)
+		l := listeners.NewListener(args[0], args[1], p)
 		_, err := s.Listener.Create(l, s.Stop)
 		if err != nil {
 			ErrorResponse(ListenerMenu.Name, err.Error())
@@ -60,11 +60,12 @@ func ListenerCommand(c *Command, args []string, s *Services) {
 			ErrorResponse(ListenerMenu.Name, err.Error())
 			return
 		}
-		s.Stop[l.ID] = make(chan listener.Cancel, 1)
-		if err := s.Listener.Activation(l, s.Stop[l.ID], listener.DeactiveStatus); err != nil {
+		s.Stop[l.ID] = make(chan listeners.Cancel, 1)
+		if err := s.Listener.Activation(l, s.Stop[l.ID], listeners.DeactiveStatus); err != nil {
 			ErrorResponse(ListenerMenu.Name, err.Error())
 			return
 		}
+		fmt.Println("stopped successfuly")
 	case "remove":
 		if len(args) != len(c.Args) {
 			ErrorResponse(ListenerMenu.Name, "invalid arugment. visit the help menu.")
@@ -75,11 +76,12 @@ func ListenerCommand(c *Command, args []string, s *Services) {
 			ErrorResponse(ListenerMenu.Name, err.Error())
 			return
 		}
-		s.Stop[l.ID] = make(chan listener.Cancel, 1)
+		s.Stop[l.ID] = make(chan listeners.Cancel, 1)
 		if err := s.Listener.Delete(args[0], s.Stop[l.ID]); err != nil {
 			ErrorResponse(ListenerMenu.Name, err.Error())
 			return
 		}
+		fmt.Println("removed successfuly")
 	case "home":
 		C2(s)
 	case "help":

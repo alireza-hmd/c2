@@ -14,11 +14,15 @@ func (s *Service) Get(id int) (*Task, error) {
 	return s.repo.Get(id)
 }
 
-func (s *Service) List() ([]*Task, error) {
-	return s.repo.List()
+func (s *Service) List(client string) ([]*Task, error) {
+	return s.repo.ListClientTasks(client)
 }
 
-func (s *Service) Create(t *Task) (int, error) {
+func (s *Service) Create(client, listener, command, taskType string) (int, error) {
+	t := NewTask(client, listener, command, taskType)
+	if err := t.Validate(); err != nil {
+		return 0, err
+	}
 	return s.repo.Create(t)
 }
 

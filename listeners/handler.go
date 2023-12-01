@@ -1,17 +1,17 @@
-package listener
+package listeners
 
 import (
 	"fmt"
 	"io"
 	"log"
 
-	"github.com/alireza-hmd/c2/client"
+	"github.com/alireza-hmd/c2/clients"
 	"github.com/alireza-hmd/c2/pkg/response"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 )
 
-func InitHandler(ls UseCase, cs client.UseCase, name string, port int) {
+func InitHandler(ls UseCase, cs clients.UseCase, name string, port int) {
 	gin.DefaultWriter = io.Discard
 	gin.SetMode(gin.ReleaseMode)
 	app := gin.Default()
@@ -41,11 +41,11 @@ func InitHandler(ls UseCase, cs client.UseCase, name string, port int) {
 
 type handler struct {
 	ls UseCase
-	cs client.UseCase
+	cs clients.UseCase
 }
 
 func (h *handler) Register(c *gin.Context) {
-	var data client.Register
+	var data clients.Register
 	if err := c.ShouldBind(&data); err != nil {
 		log.Println(err)
 		response.ErrorResponse(c, 400, "bad request")
@@ -76,7 +76,7 @@ func (h *handler) Register(c *gin.Context) {
 		response.ErrorResponse(c, 400, err.Error())
 		return
 	}
-	cli := client.NewClient(data.Listener, data.RemoteIP, data.ClientType)
+	cli := clients.NewClient(data.Listener, data.RemoteIP, data.ClientType)
 	_, err = h.cs.Create(cli)
 	if err != nil {
 		response.ErrorResponse(c, 400, err.Error())
@@ -91,7 +91,7 @@ func (h *handler) Register(c *gin.Context) {
 
 }
 
-func Handle(r *gin.RouterGroup, ls UseCase, cs client.UseCase) {
+func Handle(r *gin.RouterGroup, ls UseCase, cs clients.UseCase) {
 	h := &handler{
 		ls: ls,
 		cs: cs,

@@ -47,6 +47,19 @@ func (r *TasksRepository) List() ([]*tasks.Task, error) {
 	return tt, nil
 }
 
+func (r *TasksRepository) ListClientTasks(client string) ([]*tasks.Task, error) {
+	var tt []*tasks.Task
+	res := r.db.Model(&tasks.Task{}).Where("client = ?", client).Find(&tt)
+	if err := res.Error; err != nil {
+		log.Println(err)
+		return nil, errors.New("error getting tasks from db")
+	}
+	if res.RowsAffected == 0 {
+		return nil, response.ErrNotFound
+	}
+	return tt, nil
+}
+
 func (r *TasksRepository) Create(t *tasks.Task) (int, error) {
 	err := r.db.Create(t).Error
 	if err != nil {
